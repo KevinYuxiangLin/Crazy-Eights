@@ -1,17 +1,27 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>WebsSockets</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Crazy Eights</title>
 </head>
 <body>
 <div id="chatControls">
-    <input id="message" placeholder="Type your message">
+    <input id="message" placeholder="Type input!">
     <button id="send">Send</button>
 </div>
-<ul id="userlist"> <!-- Built by JS --> </ul>
-<div id="chat">    <!-- Built by JS --> </div>
+<p id="playerId"> </p>
+<p style="display:inline" id="turn">  </p>
+<br>
+
+<p id="direction">  </p>
+
+<p id="chat">  </p>
+
+<p id="currentCard">  </p>
+<p id="drawPile">  </p>
+<p id="eightPlayed">  </p>
+
+<button id="drawCard">Draw a Card</button>
+<button id="newGame">New Game</button>
 <script src="websocketDemo.js"></script>
 </body>
 </html>
