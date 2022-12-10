@@ -299,4 +299,59 @@ public class Part1Tests {
         driver.quit();
     }
 
+    @Test
+    void Row53() {
+        driver.get("http://localhost:3000");
+        driver.switchTo().newWindow(WindowType.TAB);
+        driver.navigate().to("http://localhost:3000");
+        driver.switchTo().newWindow(WindowType.TAB);
+        driver.navigate().to("http://localhost:3000");
+        driver.switchTo().newWindow(WindowType.TAB);
+        driver.navigate().to("http://localhost:3000");
+        ArrayList<String> tabs = new ArrayList<String>(driver.getWindowHandles());
+        driver.switchTo().window(tabs.get(0));
+        driver.findElement(By.id("newGame")).click();
+        //top card is KC
+        driver.findElement(By.id("message")).sendKeys("RIGGED_DISCARD KC");
+        driver.findElement(By.id("send")).click();
+        driver.findElement(By.id("message")).sendKeys("RIGGED_HAND 0 8H 1H 2H 3H 4H");
+        driver.findElement(By.id("send")).click();
+        driver.findElement(By.id("message")).sendKeys("8H");
+        driver.findElement(By.id("send")).click();
+        System.out.println("TEST DEBUG, CURRENT TOP CARD: " + driver.findElement(By.id("currentCard")).getText());
+        assertEquals("Choose a suit to change to in the textbox", driver.findElement(By.id("eightPlayed")).getText());
+        driver.findElement(By.id("message")).sendKeys("C");
+        driver.findElement(By.id("send")).click();
+        assertEquals("Current card: 8C", driver.findElement(By.id("currentCard")).getText());
+        assertEquals("It is Player 2's turn", driver.findElement(By.id("turn")).getText());
+        driver.quit();
+    }
+
+    @Test
+    void Row54() {
+        driver.get("http://localhost:3000");
+        driver.switchTo().newWindow(WindowType.TAB);
+        driver.navigate().to("http://localhost:3000");
+        driver.switchTo().newWindow(WindowType.TAB);
+        driver.navigate().to("http://localhost:3000");
+        driver.switchTo().newWindow(WindowType.TAB);
+        driver.navigate().to("http://localhost:3000");
+        ArrayList<String> tabs = new ArrayList<String>(driver.getWindowHandles());
+        driver.switchTo().window(tabs.get(0));
+        driver.findElement(By.id("newGame")).click();
+        //top card is KC
+        driver.findElement(By.id("message")).sendKeys("RIGGED_DISCARD KC");
+        driver.findElement(By.id("send")).click();
+        driver.findElement(By.id("message")).sendKeys("RIGGED_HAND 0 5S 1H 2H 3H 4H");
+        driver.findElement(By.id("send")).click();
+        driver.findElement(By.id("message")).sendKeys("5S");
+        driver.findElement(By.id("send")).click();
+        System.out.println("TEST DEBUG, CURRENT TOP CARD: " + driver.findElement(By.id("currentCard")).getText());
+        //current card should still be KC
+        assertEquals("Current card: KC", driver.findElement(By.id("currentCard")).getText());
+        //should still be player 1's turn
+        assertEquals("It is Player 1's turn", driver.findElement(By.id("turn")).getText());
+        driver.quit();
+    }
+
 }
