@@ -152,4 +152,16 @@ public class EightsGame {
         }
     }
 
+    //Function that allows the user to change the suit
+    public boolean changeSuit(String suit){
+        //check to make sure player entered a valid suit
+        if (suit.equals("H") || suit.equals("C") ||  suit.equals("D") ||  suit.equals("S")){
+            //place the 8 card with the changed suit on top of the discard pile
+            setDiscardPile("8" + suit);
+            return true;
+        }
+        return false;
+    }
+
+
 }

@@ -15,11 +15,12 @@ import static j2html.TagCreator.p;
 public class JavalinWebsocketExampleApp {
 
     private static int nextUserNumber = 0; // Assign to username for next connecting user
+    public static int turnSkipped = -1;
+    public static boolean suitChanged = false;
 
     //store player names with the websocket
     private static final Map<WsContext, String> userUsernameMap = new ConcurrentHashMap<>();
     public static final ArrayList<WsContext> tempPlayer = new ArrayList<>();
-    public static int turnSkipped = -1;
 
     //instance of the game
     public static EightsGame game = new EightsGame();
@@ -92,6 +93,7 @@ public class JavalinWebsocketExampleApp {
                             "discardPile", "Current card: " + game.getTopCardFromDiscardPile(),
                             "turn","It is Player " + (game.getTurn() + 1) + "'s turn",
                             "playerId", "You are Player: " + Integer.toString(i + 1),
+                            "changeSuitMsg", game.checkScore(),
                             "cardsRemaining", "There are " + game.getDrawPile().size() + " cards remaining in play",
                             "direction", "The current direction is " + game.getDirection(),
                             "scores", game.getPlayerScores(),
@@ -99,6 +101,20 @@ public class JavalinWebsocketExampleApp {
                     ));
             System.out.println("DEBUG HAND: " + i + " " + game.getHand(i));
         }
+    }
+
+    public static void sendEightsMsg(){
+        tempPlayer.get(game.getTurn()).send(
+                Map.of("userMessage", createHtmlMessageFromSender("sender", game.getHand(game.getTurn())),
+                        "discardPile", "Current card " + game.getTopCardFromDiscardPile(),
+                        "turn","It is player " + (game.getTurn() + 1) + "'s turn",
+                        "playerId", "You are Player " + Integer.toString(game.getTurn() + 1),
+                        "changeSuitMsg", "Choose a suit to change to in the textbox",
+                        "cardsRemaining", "There are " + game.getDrawPile().size() + " cards remaining in play",
+                        "direction", "The current direction is " + game.getDirection(),
+                        "scores", game.getPlayerScores(),
+                        "playerCount", game.playerCount
+                ));
     }
 
     public static void sendSkipMsg(int player){
@@ -161,7 +177,13 @@ public class JavalinWebsocketExampleApp {
         }
 
         else {
-
+            if (suitChanged) {
+                if (game.changeSuit(Message)){
+                    suitChanged = false;
+                    game.addTurn();
+                    broadcastForAllUsers();
+                }
+            }
             //Draw card functionality
             if (Message.equals("DRAW_CARD")){
                 System.out.println("Drawing Card");
@@ -178,23 +200,30 @@ public class JavalinWebsocketExampleApp {
                 }
                 //when draw pile isn't empty
                 else{
-                    game.addTurn();
-                    broadcastForAllUsers();
+                    //if current discard card is an 8
+                    if(game.getDiscardPile().peek().charAt(0) == '8'){
+                        suitChanged = true;
+                        sendEightsMsg();
+                    }
+                    else{
+                        game.addTurn();
+                        broadcastForAllUsers();
                     }
                 }
             }
             //i didnt end up implementing the play 2 cards function
-            if (!playTwoCards){
+            else if (!playTwoCards){
                 if (game.playCard(Message, game.getTurn())){
                     // case: player depletes their hand
                     if (game.playerHands[game.getTurn()].getHandList().size() == 0){
                         game.updateScore();
                         System.out.println(Arrays.toString(game.getPlayerScores()));
                         System.out.println("Player " + game.playerHands[game.getTurn()] + " has played all cards! Round over.");
-                        //TODO: change this into a for loop
+                        //change this into a for loop
                         System.out.println("Final Scores: " + "p1 " + game.getPlayerScores()[0] + "p2 " + game.getPlayerScores()[1] + "p3 " + game.getPlayerScores()[2]);
                         //next round begins, with the second joining player becoming the first to play
                         game.newDealerTurn();
+                        suitChanged = false;
                         game.initDeck();
                         game.dealHand();
                         broadcastForAllUsers();
@@ -206,12 +235,17 @@ public class JavalinWebsocketExampleApp {
                             System.out.println("reverse played");
                             game.setReverse();
                         }
+                        //case: 2, not implemented
+                        if (Message.charAt(0) == '2'){
+                            System.out.println("Next player picks up 2");
+                        }
                         //case: Q
                         if (Message.charAt(0) == 'Q'){
                             game.addTurn();
                             turnSkipped = game.getTurn();
                             System.out.println("Skipped turn of player " + (game.getTurn() + 1));
                         }
+
                         game.addTurn();
                         broadcastForAllUsers();
                         //if a player is set to be skipped, send msg, then reset var
@@ -219,6 +253,11 @@ public class JavalinWebsocketExampleApp {
                             sendSkipMsg(turnSkipped);
                             turnSkipped = -1;
                         }
+                    }
+
+                    else if (Message.charAt(0) == '8'){
+                        sendEightsMsg();
+                        suitChanged = true;
                     }
 
                 }
