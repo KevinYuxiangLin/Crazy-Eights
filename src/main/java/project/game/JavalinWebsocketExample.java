@@ -150,6 +150,20 @@ public class JavalinWebsocketExampleApp {
             broadcastForAllUsers();
         }
 
+        //Rigging: the draw pile's deck.
+        if (Message.split(" ")[0].equals("RIGGED_DECK")){
+            String[] tempArr = Message.split(" ");
+            System.out.println("DEBUG TEMP ARR after split: " + Arrays.toString(tempArr));
+            String[] cardsArr = new String[tempArr.length -1];
+            for (int i = 0; i < cardsArr.length; i++){
+                System.out.println("DEBUG TEMP ARR: " + tempArr[i+1]);
+                cardsArr[i] = tempArr[i+1];
+            }
+            game.rigDeck(cardsArr);
+            System.out.println("DEBUG RIGGED DECK: " + game.getDrawPile());
+            broadcastForAllUsers();
+        }
+
         //Rigging: Discard/the top card on the discard pile
         if (Message.split(" ")[0].equals("RIGGED_DISCARD")){
             String rigDiscard = Message.split(" ")[1];
