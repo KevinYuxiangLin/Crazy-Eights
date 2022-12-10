@@ -48,5 +48,14 @@ function updateChat(msg) { // Update chat-panel and list of connected users
     document.getElementById("eightPlayed").innerHTML = (data.changeSuitMsg);
     document.getElementById("drawPile").innerHTML = (data.cardsRemaining);
     document.getElementById("direction").innerHTML = (data.direction);
+    let strScores = "Scores - "
+    if (data.scores) {
+        console.log("scores exist! were here!!")
+    }
+
+    for (let i = 0; i < data.playerCount; i++){
+        strScores += " Player " + (i+1) + ": " + data.scores[i];
+    }
+    document.getElementById("scores").innerHTML = strScores;
 
 }

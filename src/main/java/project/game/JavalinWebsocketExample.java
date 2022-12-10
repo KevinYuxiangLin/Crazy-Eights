@@ -1,28 +1,36 @@
 package project.game;
 
+//import app.util.HerokuUtil;
 import io.javalin.Javalin;
 import io.javalin.http.staticfiles.Location;
 import io.javalin.websocket.WsContext;
+import project.game.EightsGame;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import static j2html.TagCreator.article;
+import static j2html.TagCreator.attrs;
+import static j2html.TagCreator.b;
 import static j2html.TagCreator.p;
+import static j2html.TagCreator.span;
 
 public class JavalinWebsocketExampleApp {
 
     private static int nextUserNumber = 0; // Assign to username for next connecting user
-    public static int turnSkipped = -1;
     public static boolean suitChanged = false;
+    public static boolean playTwoCards = false;
+    public static int turnSkipped = -1;
 
     //store player names with the websocket
+//    public static final Map<WsContext,String> usernameMap = new ConcurrentHashMap<>();
     private static final Map<WsContext, String> userUsernameMap = new ConcurrentHashMap<>();
     public static final ArrayList<WsContext> tempPlayer = new ArrayList<>();
 
-    //instance of the game
+    //cards
     public static EightsGame game = new EightsGame();
 
     public static void main(String[] args) {
@@ -198,9 +206,10 @@ public class JavalinWebsocketExampleApp {
                     broadcastForAllUsers();
                 }
             }
+
             //Draw card functionality
-            if (Message.equals("DRAW_CARD")){
-                System.out.println("Drawing Card");
+            else if (Message.equals("DRAW_CARD")){
+                System.out.println("Draw Card");
                 game.drawCard(game.getTurn());
                 //draw pile is empty, round is over, tally scores
                 if (game.getDrawPile().size() <= 0){
@@ -236,7 +245,6 @@ public class JavalinWebsocketExampleApp {
                         //change this into a for loop
                         System.out.println("Final Scores: " + "p1 " + game.getPlayerScores()[0] + "p2 " + game.getPlayerScores()[1] + "p3 " + game.getPlayerScores()[2]);
                         //next round begins, with the second joining player becoming the first to play
-                        game.newDealerTurn();
                         suitChanged = false;
                         game.initDeck();
                         game.dealHand();

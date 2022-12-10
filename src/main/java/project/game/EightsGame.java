@@ -8,8 +8,8 @@ public class EightsGame {
     static int playerCount = 0;
     static int[] playerScores = {0, 0, 0, 0};
     static int playerTurn = 0;
-    static int newDealer = 0;
     static boolean reverse = false;
+    static int newDealer = 0;
 
     public EightsGame() {
         for (int i = 0; i < playerHands.length; i++){
@@ -54,11 +54,9 @@ public class EightsGame {
     //Getters and Setters
     public Stack<String> getDrawPile() { return drawPile; }
     public String getHand (int player) { return playerHands[player].getHand(); }
+    public Stack<String> getDiscardPile() { return discardPile; }
     public int getTurn() { return playerTurn; }
     public String getTopCardFromDiscardPile(){ return discardPile.peek(); }
-    public int[] getPlayerScores() {
-        return playerScores;
-    }
     public String getDirection() {
         if (reverse){
             return "right";
@@ -67,13 +65,13 @@ public class EightsGame {
             return "left";
         }
     }
+    public int[] getPlayerScores() {
+        return playerScores;
+    }
 
+    public void setReverse() { reverse = !reverse; }
     public void setDiscardPile(String card){ discardPile.push(card); }
     public void setTurn(int turn) { playerTurn = turn; }
-    public void setReverse() { reverse = !reverse; }
-
-    public void resetTurn() { playerTurn = 0; }
-    public void resetNewDealer() { newDealer = 0; }
 
     public void addPlayer() { playerCount++; }
     public void addTurn(){
@@ -91,14 +89,8 @@ public class EightsGame {
         }
     }
 
-    public void dealHand() {
-        for (int i = 0; i < playerCount; i++){
-            for (int j = 0; j < 5; j++){ //max 4 players
-                playerHands[i].addCardToHand(drawPile.pop());
-            }
-        }
-    }
-
+    public void resetTurn() { playerTurn = 0; }
+    public void resetNewDealer() { newDealer = 0; }
     public void resetPlayers(){
         playerCount = 0;
         for (int i = 0; i < 4; i++){
@@ -136,6 +128,14 @@ public class EightsGame {
         return false;
     }
 
+    public void dealHand() {
+        for (int i = 0; i < playerCount; i++){
+            for (int j = 0; j < 5; j++){ //max 4 players
+                playerHands[i].addCardToHand(drawPile.pop());
+            }
+        }
+    }
+
     //Function that allows the player to play a selected card, if valid, pushes it onto the discard stack
     public boolean playCard(String card, int player){
         if (cardIsPlayable(card)){ //check if card is allowed to be played
@@ -152,7 +152,26 @@ public class EightsGame {
         }
     }
 
-    //Function that allows the user to change the suit
+    //Function that draws a card
+    public boolean drawCard(int player){
+        for (int i = 0; i < 3; i++) {
+            if (drawPile.size() > 0){
+                //if player picks up a card that is playable, then it is immediately played
+                if (cardIsPlayable(drawPile.peek())) {
+                    discardPile.push(drawPile.pop());
+                    return true;
+                }
+                else {
+                    playerHands[player].addCardToHand(drawPile.pop());
+                }
+            }
+            else {
+                return false;
+            }
+        }
+        return true;
+    }
+
     public boolean changeSuit(String suit){
         //check to make sure player entered a valid suit
         if (suit.equals("H") || suit.equals("C") ||  suit.equals("D") ||  suit.equals("S")){
@@ -161,6 +180,37 @@ public class EightsGame {
             return true;
         }
         return false;
+    }
+
+    public void updateScore(){
+        int score = 0;
+        for (int i = 0; i < playerCount; i++){
+            System.out.println(playerScores[i]);
+            for (int j = 0; j < playerHands[i].getHandList().size(); j++){
+                if (playerHands[i].getHandList().get(j).length() == 3){
+                    playerScores[i] += 10;
+                }
+                else {
+                    System.out.println("Current player " + i + "'s card: " + playerHands[i].getHandList().get(j).charAt(0));
+                    //special case for 10 rank
+                    if (playerHands[i].getHandList().get(j).length() == 3) {
+                        playerScores[i] += 10;
+                    }
+                    switch (playerHands[i].getHandList().get(j).charAt(0)) {
+                        case '1' -> playerScores[i] += 1;
+                        case '2' -> playerScores[i] += 2;
+                        case '3' -> playerScores[i] += 3;
+                        case '4' -> playerScores[i] += 4;
+                        case '5' -> playerScores[i] += 5;
+                        case '6' -> playerScores[i] += 6;
+                        case '7' -> playerScores[i] += 7;
+                        case '8' -> playerScores[i] += 50;
+                        case '9' -> playerScores[i] += 9;
+                        case 'J', 'Q', 'K' -> playerScores[i] += 10;
+                    }
+                }
+            }
+        }
     }
 
 
