@@ -245,6 +245,7 @@ public class JavalinWebsocketExampleApp {
                         //change this into a for loop
                         System.out.println("Final Scores: " + "p1 " + game.getPlayerScores()[0] + "p2 " + game.getPlayerScores()[1] + "p3 " + game.getPlayerScores()[2]);
                         //next round begins, with the second joining player becoming the first to play
+                        game.newDealerTurn();
                         suitChanged = false;
                         game.initDeck();
                         game.dealHand();

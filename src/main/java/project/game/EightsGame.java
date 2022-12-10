@@ -213,5 +213,42 @@ public class EightsGame {
         }
     }
 
+    public String checkScore(){
+        boolean winnerExists = false;
+        String tempWinner;
+        int minimumScore = 100;
+        for (int i = 0; i < playerCount; i++){
+            //if any player has a score greater than 100, the game is over
+            if (playerScores[i] >= 100){
+                winnerExists = true;
+                break;
+            }
+        }
+        if (winnerExists) {
+            for (int i = 0; i <playerCount; i++){
+                if (playerScores[i] < minimumScore){
+                    minimumScore = playerScores[i];
+                }
+            }
+            tempWinner = "The winner is: ";
+            for (int i = 0; i < playerCount; i++){
+                if (playerScores[i] == minimumScore){
+                    tempWinner += (i + 1) + "!";
+                }
+            }
+        }
+        else{
+            tempWinner = "";
+        }
+        return tempWinner;
+    }
+
+    public void newDealerTurn() {
+        newDealer++;
+        if (newDealer >= playerCount) {
+            newDealer = 0;
+        }
+        playerTurn = newDealer - 1;
+    }
 
 }
