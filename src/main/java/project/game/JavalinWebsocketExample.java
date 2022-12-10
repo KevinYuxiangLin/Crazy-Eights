@@ -186,6 +186,11 @@ public class JavalinWebsocketExampleApp {
                     }
                     //case: player does not play an 8
                     if (Message.charAt(0) != '8') {
+                        //case: 1
+                        if (Message.charAt(0) == '1' && Message.length() == 2){
+                            System.out.println("reverse played");
+                            game.setReverse();
+                        }
                         game.addTurn();
                         broadcastForAllUsers();
                     }

@@ -9,6 +9,7 @@ public class EightsGame {
     static int[] playerScores = {0, 0, 0, 0};
     static int playerTurn = 0;
     static int newDealer = 0;
+    static boolean reverse = false;
 
     public EightsGame() {
         for (int i = 0; i < playerHands.length; i++){
@@ -28,6 +29,7 @@ public class EightsGame {
 
     //Initialize the deck
     public void initDeck() {
+        reverse = false;
         Collections.shuffle(listOfCards); //shuffle cards
         drawPile.clear();
         discardPile.clear();
@@ -57,14 +59,37 @@ public class EightsGame {
     public int[] getPlayerScores() {
         return playerScores;
     }
+    public String getDirection() {
+        if (reverse){
+            return "right";
+        }
+        else {
+            return "left";
+        }
+    }
 
     public void setDiscardPile(String card){ discardPile.push(card); }
     public void setTurn(int turn) { playerTurn = turn; }
+    public void setReverse() { reverse = !reverse; }
 
     public void resetTurn() { playerTurn = 0; }
     public void resetNewDealer() { newDealer = 0; }
 
     public void addPlayer() { playerCount++; }
+    public void addTurn(){
+        if (!reverse){
+            playerTurn++;
+            if (playerTurn >= playerCount){
+                playerTurn = 0;
+            }
+        }
+        else {
+            playerTurn--;
+            if (playerTurn <= -1){
+                playerTurn = playerCount - 1;
+            }
+        }
+    }
 
     public void dealHand() {
         for (int i = 0; i < playerCount; i++){
@@ -124,13 +149,6 @@ public class EightsGame {
         }
         else{
             return false;
-        }
-    }
-
-    public void addTurn(){
-        playerTurn++;
-        if (playerTurn >= playerCount){
-            playerTurn = 0;
         }
     }
 
