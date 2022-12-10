@@ -1,22 +1,16 @@
 package project.game;
 
-//import app.util.HerokuUtil;
 import io.javalin.Javalin;
 import io.javalin.http.staticfiles.Location;
 import io.javalin.websocket.WsContext;
-import project.game.EightsGame;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+
 import static j2html.TagCreator.article;
-import static j2html.TagCreator.attrs;
-import static j2html.TagCreator.b;
 import static j2html.TagCreator.p;
-import static j2html.TagCreator.span;
 
 public class JavalinWebsocketExampleApp {
 
@@ -26,7 +20,6 @@ public class JavalinWebsocketExampleApp {
     public static int turnSkipped = -1;
 
     //store player names with the websocket
-//    public static final Map<WsContext,String> usernameMap = new ConcurrentHashMap<>();
     private static final Map<WsContext, String> userUsernameMap = new ConcurrentHashMap<>();
     public static final ArrayList<WsContext> tempPlayer = new ArrayList<>();
 
