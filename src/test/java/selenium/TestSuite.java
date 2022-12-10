@@ -7,7 +7,7 @@ import org.junit.platform.suite.api.SuiteDisplayName;
 
 @Suite
 @SuiteDisplayName("JUnit Suite")
-@SelectClasses({Part1Tests.class, Part2Tests.class, Part3Test.class})
+@SelectClasses({ATests.class})
 @IncludeClassNamePatterns(".*Tests")
 
 public class TestSuite {
