@@ -19,6 +19,7 @@ public class JavalinWebsocketExampleApp {
     //store player names with the websocket
     private static final Map<WsContext, String> userUsernameMap = new ConcurrentHashMap<>();
     public static final ArrayList<WsContext> tempPlayer = new ArrayList<>();
+    public static int turnSkipped = -1;
 
     //instance of the game
     public static EightsGame game = new EightsGame();
@@ -98,6 +99,20 @@ public class JavalinWebsocketExampleApp {
                     ));
             System.out.println("DEBUG HAND: " + i + " " + game.getHand(i));
         }
+    }
+
+    public static void sendSkipMsg(int player){
+        tempPlayer.get(player).send(
+                Map.of("userMessage", createHtmlMessageFromSender("sender", game.getHand(player)),
+                        "discardPile", "Current card " + game.getTopCardFromDiscardPile(),
+                        "turn","It is player " + (game.getTurn() + 1) + "'s turn",
+                        "playerId", "You are Player " + Integer.toString(game.getTurn() + 1),
+                        "changeSuitMsg", "Your turn got skipped!",
+                        "cardsRemaining", "There are " + game.getDrawPile().size() + " cards remaining in play",
+                        "direction", "The current direction is " + game.getDirection(),
+                        "scores", game.getPlayerScores(),
+                        "playerCount", game.playerCount
+                ));
     }
 
     //Main chunk of this class, function to handle received messages, the textbox on the html page
@@ -191,8 +206,19 @@ public class JavalinWebsocketExampleApp {
                             System.out.println("reverse played");
                             game.setReverse();
                         }
+                        //case: Q
+                        if (Message.charAt(0) == 'Q'){
+                            game.addTurn();
+                            turnSkipped = game.getTurn();
+                            System.out.println("Skipped turn of player " + (game.getTurn() + 1));
+                        }
                         game.addTurn();
                         broadcastForAllUsers();
+                        //if a player is set to be skipped, send msg, then reset var
+                        if (turnSkipped >= 0){
+                            sendSkipMsg(turnSkipped);
+                            turnSkipped = -1;
+                        }
                     }
 
                 }
